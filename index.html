@@ -2,26 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>M Homes</title>
+<title>M Homes — Fixed Edition</title>
 <style>
 :root{--navy:#10243f;--panel:#203756;--gold:#d9b36b;--white:#f5f7fa}
 *{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--white);font:16px/1.5 system-ui,-apple-system,sans-serif}
 header{text-align:center;border-bottom:2px solid var(--gold);padding:24px 14px}header h1{color:var(--gold);letter-spacing:2px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:pan-y;font-size:28px;margin:0}header p{margin:6px 0 0}
 main{max-width:800px;margin:auto;padding:22px 16px}h2{color:var(--gold);margin:0 0 15px}h3{margin:0 0 8px}section{display:none}section.active{display:block}
 button,.btn{width:100%;display:block;text-align:center;background:var(--gold);color:var(--navy);border:0;border-radius:12px;padding:14px;margin:11px 0;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}.outline{border:1px solid var(--gold);background:transparent;color:var(--gold)}button:focus-visible,.btn:focus-visible{outline:3px solid white}
-.card{background:var(--panel);padding:19px;margin:15px 0;border-radius:16px}input,select{display:block;width:100%;margin:6px 0 13px;padding:12px;border-radius:9px;border:1px solid #b7c2d0;font:inherit}input[type=color]{height:52px;padding:4px}input[type=file]{color:white}.small{font-size:13px;color:#cbd5e2}.message{color:#ffe1a3}.row{display:flex;gap:10px}.row button{flex:1}iframe{width:100%;height:65vh;border:0;border-radius:12px;background:white}#canvasWrap{border:1px solid #66809a;background:#07182a;max-height:65vh;overflow:auto;border-radius:10px}#roomCanvas{display:block;max-width:none;touch-action:manipulation;cursor:crosshair}img.gallery-img{width:100%;height:auto;max-height:360px;object-fit:contain;background:#08182b;border-radius:10px}.capture-controls{position:sticky;bottom:10px;z-index:3;background:#10243ff0;padding:7px;border:1px solid var(--gold);border-radius:13px}.capture-controls button{margin:2px 0}.tour-instruction{padding:8px 0;color:#ffe1a3}footer{text-align:center;color:#c2cad6;padding:24px}.hidden{display:none!important}
+.card{background:var(--panel);padding:19px;margin:15px 0;border-radius:16px}input,select{display:block;width:100%;margin:6px 0 13px;padding:12px;border-radius:9px;border:1px solid #b7c2d0;font:inherit}input[type=color]{height:52px;padding:4px}input[type=file]{color:white}.small{font-size:13px;color:#cbd5e2}.message{color:#ffe1a3}.row{display:flex;gap:10px}.row button{flex:1}/* Fit the embedded iGUIDE to the real photo's widescreen area instead of leaving a tall blank panel. */
+#tourFrame{display:block;width:100%;height:auto;aspect-ratio:16/9;border:0;border-radius:12px;background:#10243f}
+#tour{position:relative}
+#tour .tour-view{width:100%;background:#10243f}
+@media(max-width:650px){
+  main:has(#tour.active){padding:12px 0 22px;max-width:none}
+  #tour>h2,#tour>.capture-controls,#tour>.small,#tour>a,#tour>button,#tour>.mobile-help{margin-left:12px;margin-right:12px;width:calc(100% - 24px)}
+  #tour .tour-view{width:100vw;margin-left:calc(50% - 50vw)}
+  #tourFrame{width:100vw;border-radius:0}
+}
+.mobile-help{font-size:14px;color:#ffe1a3}
+/* Expanded embedded view, without depending on iPhone fullscreen API. */
+body.tour-expanded{overflow:hidden}
+body.tour-expanded #tour.active{position:fixed;inset:0;z-index:100;background:var(--navy);display:flex;flex-direction:column;padding:0;overflow:hidden;height:100vh;height:100dvh}
+body.tour-expanded #tour.active > :not(.tour-view):not(.expanded-controls){display:none}
+body.tour-expanded #tour .tour-view{flex:1;min-height:0;width:100%;margin:0;display:flex}
+body.tour-expanded #tourFrame{width:100%;height:100%;aspect-ratio:auto;border-radius:0;flex:1}
+.expanded-controls{display:none}
+body.tour-expanded .expanded-controls{display:flex;gap:8px;flex-wrap:wrap;padding:8px 10px max(8px,env(safe-area-inset-bottom));background:var(--navy)}
+.expanded-controls button{flex:1 1 120px;margin:0;padding:10px;font-size:14px}
+@media(max-width:650px){#tourFrame{height:65dvh;min-height:440px;aspect-ratio:auto} #tour .capture-controls{position:static}}
+
+.tour-full-link{margin:10px 0 12px}
+#canvasWrap{border:1px solid #66809a;background:#07182a;max-height:65vh;overflow:auto;border-radius:10px}#roomCanvas{display:block;max-width:none;touch-action:manipulation;cursor:crosshair}img.gallery-img{width:100%;height:auto;max-height:360px;object-fit:contain;background:#08182b;border-radius:10px}.capture-controls{position:sticky;bottom:10px;z-index:3;background:#10243ff0;padding:7px;border:1px solid var(--gold);border-radius:13px}.capture-controls button{margin:2px 0}.tour-instruction{padding:8px 0;color:#ffe1a3}footer{text-align:center;color:#c2cad6;padding:24px}.hidden{display:none!important}
 </style>
 </head>
 <body>
-<header><h1 id="secretTitle" title="M Homes">M HOMES</h1><p>Explore Your Future Home</p></header>
+<header><h1 id="secretTitle" title="M Homes">M HOMES</h1><p>Explore Your Future Home</p><p style="font-size:12px;color:#ffe1a3">UPDATED WEBSITE • NOV 26</p></header>
 <main>
 <section id="home" class="active"><h2>Welcome Home</h2><p>Discover houses, explore 360° tours, and try your own room colors.</p><button onclick="show('explore')">Explore Houses</button><button onclick="show('favorites')">Favorites</button><button onclick="show('gallery')">My Color Gallery</button><button onclick="show('contact')">Contact Us</button></section>
 <section id="explore"><h2>Explore Houses</h2><div id="houseList"></div><button class="outline" onclick="show('home')">Back Home</button></section>
 <section id="house"><h2 id="houseTitle"></h2><p id="houseAddress"></p><button onclick="openTour()">View Original 360° House</button><button onclick="show('color')">Create Color</button><button id="favoriteButton" onclick="toggleFavorite()">Add to Favorites</button><button class="outline" onclick="show('explore')">Back</button></section>
-<section id="tour"><h2>Original 360° House</h2><iframe id="tourFrame" title="Original 360 degree property tour" allowfullscreen></iframe><div class="capture-controls"><button id="captureBtn" onclick="captureRoom()">📸 Capture This Room</button><p class="small" id="captureInfo">On a Mac: select the M HOMES Chrome tab and click Share. On a phone: use a screenshot and choose Upload Screenshot instead.</p></div><p class="small">The tour is provided by its original creator. If the tour does not display here, use the open-link button.</p><a class="btn" id="externalTour" target="_blank" rel="noopener noreferrer">Open Tour in New Tab</a><button class="outline" onclick="show('house')">Back to House</button></section>
+<section id="tour"><h2>Original 360° House</h2><p class="mobile-help">Tap Click to Explore inside the tour. For the largest view, turn your phone sideways and use Full Screen Tour.</p><a class="btn tour-full-link" id="fullScreenTour" target="_blank" rel="noopener noreferrer">⛶ Full Screen Tour</a><button class="outline" onclick="expandTour(true)">Expand Tour Inside M HOMES</button><div class="tour-view"><iframe id="tourFrame" title="Original 360 degree property tour" allow="fullscreen" allowfullscreen></iframe></div><div class="expanded-controls"><button onclick="captureRoom()">Capture This Room</button><button class="outline" onclick="expandTour(false)">Exit Expanded View</button></div><div class="capture-controls"><button id="captureBtn" onclick="captureRoom()">📸 Capture This Room</button><p class="small" id="captureInfo">On a supported computer browser, choose the M HOMES tab and Share. Automatic capture is not available on iPhone Safari.</p></div><p class="small">The tour is provided by its original creator. If the tour does not display here, use the open-link button.</p><a class="btn" id="externalTour" target="_blank" rel="noopener noreferrer">Open Tour in New Tab</a><button class="outline" onclick="show('house')">Back to House</button></section>
 <section id="favorites"><h2>Favorites</h2><div id="favoriteList"></div><button class="outline" onclick="show('home')">Back Home</button></section>
 <section id="contact"><h2>Contact Us</h2><div class="card"><p>Questions about a property? Contact us.</p><a class="btn" href="tel:+19024411964">Call +1 (902) 441-1964</a><p class="small">On a phone, this should open the calling option. The caller chooses whether to place the call.</p></div><button class="outline" onclick="show('home')">Back Home</button></section>
-<section id="color"><h2>Create Color</h2><p>Open the original house tour, move to the room you want, then press <b>Capture This Room</b>. On a phone or if capture fails, upload a screenshot instead.</p><button onclick="openTour()">Open Tour + Capture This Room</button><label for="roomFile">Upload Screenshot Instead</label><input id="roomFile" type="file" accept="image/*"><div id="editor" class="hidden card"><h3>Color Studio</h3><p class="small">Use Protect Object first around a door or furniture, then choose Paint Area for a wall. Tap four corners in order around each shape.</p><label for="mode">Tool</label><select id="mode"><option value="protect">Protect Object</option><option value="paint">Paint Area</option></select><label for="colorPicker">Choose Color</label><input type="color" id="colorPicker" value="#477cba"><p id="pointLabel" class="message">Corners: 0 of 4</p><div id="canvasWrap"><canvas id="roomCanvas"></canvas></div><div class="row"><button onclick="zoomBy(-0.25)">Zoom −</button><button onclick="zoomBy(0.25)">Zoom +</button></div><button onclick="applyArea()">Apply Four Corners</button><button class="outline" onclick="clearCorners()">Clear Selected Corners</button><button class="outline" onclick="undoArea()">Undo Last Change</button><button onclick="saveToGallery()">Save to My Gallery</button><button class="outline" onclick="downloadRoom()">Download Picture</button><p id="editStatus" class="message" role="status"></p><p class="small">This paints your screenshot, not the moving iGUIDE tour. Use the scrollbars within the image to move when zoomed in.</p></div><button onclick="show('gallery')">My Color Gallery</button><button class="outline" onclick="show('house')">Back to House</button></section>
+<section id="color"><h2>Create Color</h2><p>Open the original house tour, move to the room you want, then press <b>Capture This Room</b>. Automatic capture currently requires a supported computer browser. iPhone capture is not available yet.</p><button onclick="openTour()">Open Tour + Capture This Room</button><div id="editor" class="hidden card"><h3>Color Studio</h3><p class="small">Use Protect Object first around a door or furniture, then choose Paint Area for a wall. Tap four corners in order around each shape.</p><label for="mode">Tool</label><select id="mode"><option value="protect">Protect Object</option><option value="paint">Paint Area</option></select><label for="colorPicker">Choose Color</label><input type="color" id="colorPicker" value="#477cba"><p id="pointLabel" class="message">Corners: 0 of 4</p><div id="canvasWrap"><canvas id="roomCanvas"></canvas></div><div class="row"><button onclick="zoomBy(-0.25)">Zoom −</button><button onclick="zoomBy(0.25)">Zoom +</button></div><button onclick="applyArea()">Apply Four Corners</button><button class="outline" onclick="clearCorners()">Clear Selected Corners</button><button class="outline" onclick="undoArea()">Undo Last Change</button><button onclick="saveToGallery()">Save to My Gallery</button><button class="outline" onclick="downloadRoom()">Download Picture</button><p id="editStatus" class="message" role="status"></p><p class="small">This paints a captured still, not the moving iGUIDE tour. Color blending preserves visible texture and shading. Use the scrollbars within the image to move when zoomed in.</p></div><button onclick="show('gallery')">My Color Gallery</button><button class="outline" onclick="show('house')">Back to House</button></section>
 <section id="gallery"><h2>My Color Gallery</h2><p class="small">Pictures are stored only in this browser on this device. Download copies to keep them safely.</p><div id="galleryList"></div><button onclick="show('color')">Create Color</button><button class="outline" onclick="show('home')">Back Home</button></section>
 <section id="owner"><h2>Owner Access — Test Version</h2><p class="message">Important: this test PIN is in public website code, so this is NOT secure owner authentication. Listings added here appear only in your browser. Do not use this for live business management.</p><div class="card"><h3>Add House</h3><label for="nameInput">House Name</label><input id="nameInput" placeholder="House name"><label for="addressInput">Location</label><input id="addressInput" placeholder="House location"><label for="tourInput">iGUIDE Tour Link</label><input id="tourInput" placeholder="https://youriguide.com/..."><button onclick="addHouse()">Add House to This Browser</button></div><h3>Houses in This Browser</h3><div id="ownerList"></div><button class="outline" onclick="show('home')">Back Home</button></section>
 </main><footer>© M Homes</footer>
@@ -34,12 +57,13 @@ let houses=readArray('hh_web_houses',STARTER).map(h=>({...h,address:h.address||h
 let favorites=readArray('hh_web_favorites',[]),selected=houses[0]?.id||null;
 const $=id=>document.getElementById(id);
 function persist(){try{localStorage.setItem('hh_web_houses',JSON.stringify(houses.map(h=>({...h,location:h.address}))));localStorage.setItem('hh_web_favorites',JSON.stringify(favorites))}catch{alert('Browser storage is unavailable.')}}
-function show(page){document.querySelectorAll('main section').forEach(s=>s.classList.toggle('active',s.id===page));if(page==='explore')renderHouses();if(page==='favorites')renderFavorites();if(page==='gallery')renderGallery();if(page==='owner')renderOwner();window.scrollTo(0,0)}
+function expandTour(on){document.body.classList.toggle('tour-expanded',on)}
+function show(page){if(page!=='tour')expandTour(false);document.querySelectorAll('main section').forEach(s=>s.classList.toggle('active',s.id===page));if(page==='explore')renderHouses();if(page==='favorites')renderFavorites();if(page==='gallery')renderGallery();if(page==='owner')renderOwner();window.scrollTo(0,0)}
 function button(label,fn,outline=false){const b=document.createElement('button');b.textContent=label;if(outline)b.className='outline';b.onclick=fn;return b}
 function card(title,detail){const d=document.createElement('div');d.className='card';const h=document.createElement('h3');h.textContent=title;d.append(h);if(detail){const p=document.createElement('p');p.textContent=detail;d.append(p)}return d}
 function renderHouses(){const dest=$('houseList');dest.replaceChildren();if(!houses.length){dest.textContent='No houses listed yet.';return}houses.forEach(h=>{const d=card(h.name,h.address);d.append(button('View House',()=>chooseHouse(h.id)));dest.append(d)})}
 function chooseHouse(id){const h=houses.find(x=>x.id===id);if(!h)return;selected=id;$('houseTitle').textContent=h.name;$('houseAddress').textContent=h.address;$('favoriteButton').textContent=favorites.includes(id)?'Remove from Favorites':'Add to Favorites';show('house')}
-function openTour(){const h=houses.find(x=>x.id===selected);if(!h){alert('Choose a house first.');return}$('tourFrame').src=h.tour;$('externalTour').href=h.tour;show('tour')}
+function openTour(){const h=houses.find(x=>x.id===selected);if(!h){alert('Choose a house first.');return}$('tourFrame').src=h.tour;$('externalTour').href=h.tour;$('fullScreenTour').href=h.tour;show('tour')}
 function toggleFavorite(){if(!selected)return;favorites=favorites.includes(selected)?favorites.filter(x=>x!==selected):[...favorites,selected];persist();chooseHouse(selected)}
 function renderFavorites(){const dest=$('favoriteList');dest.replaceChildren();const saved=houses.filter(h=>favorites.includes(h.id));if(!saved.length){dest.textContent='No favorites yet.';return}saved.forEach(h=>{const d=card(h.name,h.address);d.append(button('View House',()=>chooseHouse(h.id)));dest.append(d)})}
 // Demo-only PIN. Anyone inspecting this public page can see it.
@@ -58,25 +82,17 @@ function loadRoomImage(img){
   areas=[];corners=[];zoom=1;
   $('editor').classList.remove('hidden');
   $('editStatus').textContent='Room captured! Select four corners.';
-  $('mode').value='protect';
+  $('mode').value='paint';
   renderEditor();
   show('color');
 }
-$('roomFile').addEventListener('change',e=>{
-  const file=e.target.files?.[0];if(!file)return;
-  if(!file.type.startsWith('image/')){alert('Choose an image.');return}
-  const u=URL.createObjectURL(file),img=new Image();
-  img.onload=()=>{loadRoomImage(img);URL.revokeObjectURL(u)};
-  img.onerror=()=>{URL.revokeObjectURL(u);alert('Could not open the image.')};
-  img.src=u;
-});
 // Browser security prevents reading the iGUIDE iframe directly.
 // This uses Chrome's user-approved tab sharing instead; no automatic access.
 async function captureRoom(){
   const label=$('captureInfo');
   if(!navigator.mediaDevices?.getDisplayMedia){
-    label.textContent='This browser cannot capture a tab. Take a screenshot and choose Upload Screenshot Instead.';
-    show('color');return;
+    label.textContent='Automatic room capture is unavailable in this browser.';
+    alert('Automatic room capture is not supported on iPhone Safari. You can still explore the full screen tour.');return;
   }
   let stream;
   try{
@@ -101,8 +117,8 @@ async function captureRoom(){
     const sx=video.videoWidth/window.innerWidth;
     const sy=video.videoHeight/window.innerHeight;
     const x=Math.max(0,now.left*sx),y=Math.max(0,now.top*sy);
-    const w=Math.min(video.videoWidth-x,now.width*sx);
-    const h=Math.min(video.videoHeight-y,now.height*sy);
+    const w=Math.min(video.videoWidth,now.right*sx)-x;
+    const h=Math.min(video.videoHeight,now.bottom*sy)-y;
     if(w<100||h<100)throw Error('Tour is outside the visible tab. Scroll so the tour is visible and try again.');
     const snap=document.createElement('canvas');
     snap.width=Math.min(1400,Math.round(w));
@@ -113,22 +129,22 @@ async function captureRoom(){
     loadRoomImage(img);
     label.textContent='Room captured. You can repeat this for another room.';
   }catch(err){
-    label.textContent='Capture did not work: '+(err.message||'not allowed')+'. You can upload a screenshot instead.';
-    alert('Could not capture this room automatically. You can take a screenshot and use Upload Screenshot Instead.');
+    label.textContent='Capture did not work: '+(err.message||'not allowed')+'. Please try again in a supported computer browser.';
+    alert('Could not capture this room. Please select the M HOMES tab in a supported computer browser.');
     show('color');
   }finally{
     if(stream)stream.getTracks().forEach(t=>t.stop());
   }
 }
 function drawPath(pts){ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath()}
-function paintImage(showDots){if(!sourceImage)return;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(sourceImage,0,0,canvas.width,canvas.height);areas.filter(a=>a.type==='paint').forEach(a=>{ctx.save();drawPath(a.pts);ctx.clip();ctx.globalCompositeOperation='color';ctx.globalAlpha=.88;ctx.fillStyle=a.color;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore()});areas.filter(a=>a.type==='protect').forEach(a=>{ctx.save();drawPath(a.pts);ctx.clip();ctx.drawImage(sourceImage,0,0,canvas.width,canvas.height);ctx.restore()});if(showDots){corners.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,canvas.width/180),0,2*Math.PI);ctx.fillStyle='#ffe18a';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#10243f';ctx.stroke();ctx.font=Math.max(13,canvas.width/80)+'px Arial';ctx.fillStyle='white';ctx.fillText(String(i+1),p.x+9,p.y-8)});if(corners.length>1){ctx.beginPath();ctx.moveTo(corners[0].x,corners[0].y);corners.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle='#ffe18a';ctx.lineWidth=3;ctx.stroke()}}}
+function paintImage(showDots){if(!sourceImage)return;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(sourceImage,0,0,canvas.width,canvas.height);areas.filter(a=>a.type==='paint').forEach(a=>{ctx.save();drawPath(a.pts);ctx.clip();ctx.globalCompositeOperation='color';ctx.globalAlpha=.88;ctx.fillStyle=a.color;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore()});areas.filter(a=>a.type==='protect').forEach(a=>{ctx.save();drawPath(a.pts);ctx.clip();ctx.drawImage(sourceImage,0,0,canvas.width,canvas.height);ctx.restore()});if(showDots){corners.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,canvas.width/180),0,2*Math.PI);ctx.fillStyle='#ffe18a';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#10243f';ctx.stroke();ctx.font=Math.max(13,canvas.width/80)+'px Arial';ctx.fillStyle='white';ctx.fillText(String(i+1),p.x+9,p.y-8)});if(corners.length>1){ctx.beginPath();ctx.moveTo(corners[0].x,corners[0].y);corners.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));if(corners.length===4)ctx.closePath();ctx.strokeStyle='#ffe18a';ctx.lineWidth=3;ctx.stroke()}}}
 function renderEditor(){if(!sourceImage)return;paintImage(true);const width=Math.min($('canvasWrap').clientWidth||360,canvas.width)*zoom;canvas.style.width=width+'px';canvas.style.height='auto';$('pointLabel').textContent='Corners: '+corners.length+' of 4'}
 canvas.addEventListener('click',e=>{if(!sourceImage)return;if(corners.length>=4){$('editStatus').textContent='Press Apply Four Corners first.';return}const r=canvas.getBoundingClientRect();corners.push({x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height});renderEditor()});
 function clearCorners(){corners=[];renderEditor()}
 function applyArea(){if(corners.length!==4){alert('Select exactly four corners.');return}areas.push({type:$('mode').value,color:$('colorPicker').value,pts:corners.map(p=>({...p}))});corners=[];renderEditor();$('editStatus').textContent='Area applied. Save to your gallery when ready.'}
 function undoArea(){if(areas.length)areas.pop();corners=[];renderEditor()}
 function zoomBy(n){zoom=Math.max(.5,Math.min(4,zoom+n));renderEditor()}
-function cleanPicture(){if(!sourceImage)throw Error('Choose a screenshot first.');paintImage(false);const copy=document.createElement('canvas');copy.width=canvas.width;copy.height=canvas.height;copy.getContext('2d').drawImage(canvas,0,0);renderEditor();return copy}
+function cleanPicture(){if(!sourceImage)throw Error('Capture a room first.');paintImage(false);const copy=document.createElement('canvas');copy.width=canvas.width;copy.height=canvas.height;copy.getContext('2d').drawImage(canvas,0,0);renderEditor();return copy}
 function downloadRoom(){try{const c=cleanPicture(),link=document.createElement('a');link.href=c.toDataURL('image/png');link.download='m-homes-room.png';link.click()}catch(e){alert(e.message)}}
 // IndexedDB gallery, saved per device and browser.
 function galleryDB(){return new Promise((resolve,reject)=>{if(!indexedDB){reject(Error('Storage unavailable'));return}const r=indexedDB.open('mhomes_gallery_v1',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('photos'))r.result.createObjectStore('photos',{keyPath:'id'})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
