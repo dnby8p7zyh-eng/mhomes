@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M HOMES Color Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10243f;color:white;font-family:Arial,sans-serif}
+header{text-align:center;padding:20px;border-bottom:2px solid #d9b36b}
+h1,h2{color:#d9b36b}
+main{max-width:780px;margin:auto;padding:15px}
+.panel{background:#203756;padding:16px;border-radius:14px;margin:15px 0}
+button,select,input{font-size:16px}
+button{padding:14px;border:0;border-radius:10px;background:#d9b36b;color:#10243f;font-weight:bold;cursor:pointer;min-height:45px}
+button.secondary{background:#344b67;color:white;border:1px solid #9aacc2}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+.wide{grid-column:1/-1}
+select,input[type=color]{display:block;width:100%;height:48px;border-radius:9px;margin:8px 0 15px}
+label{display:block;margin-top:12px}
+#viewport{width:100%;max-height:65vh;overflow:auto;background:#07172b;border-radius:12px;touch-action:pan-x pan-y}
+#room{display:block;max-width:none;touch-action:manipulation}
+#message{color:#ffdf91;font-weight:bold}
+#gallery img{width:100%;border-radius:8px}
+.galleryCard{padding:10px;border:1px solid #8090a6;border-radius:12px;margin:12px 0}
+</style>
+</head>
+<body>
+
+<header>
+<h1>M HOMES</h1>
+<p>Try Color Studio</p>
+</header>
+
+<main>
+<div class="panel">
+<h2>Sample Living Room</h2>
+<p>This room opens automatically. No uploading pictures!</p>
+<div id="viewport">
+<canvas id="room" width="900" height="620"></canvas>
+</div>
+<p id="message">Ready! Select four corners of a wall.</p>
+<p id="counter">Corners selected: 0 / 4</p>
+
+<label>Tool</label>
+<select id="tool">
+<option value="paint">Paint Area</option>
+<option value="protect">Protect Object</option>
+</select>
+
+<label>Choose Paint Color</label>
+<input id="color" type="color" value="#ff9238">
+
+<div class="controls">
+<button id="apply" class="wide">Apply Four Corners</button>
+<button id="zoomout" class="secondary">Zoom −</button>
+<button id="zoomin" class="secondary">Zoom +</button>
+<button id="clear" class="secondary">Clear Selected Corners</button>
+<button id="undo" class="secondary">Undo Last Change</button>
+<button id="save" class="wide">Save to My Gallery</button>
+<button id="download" class="wide secondary">Download Picture</button>
+<button id="reset" class="wide secondary">Reset Room</button>
+</div>
+</div>
+
+<div class="panel">
+<h2>My Color Gallery</h2>
+<div id="gallery">No pictures saved yet.</div>
+</div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const canvas=$("room");
+const ctx=canvas.getContext("2d");
+const base=document.createElement("canvas");
+base.width=900;
+base.height=620;
+const b=base.getContext("2d");
+const W=900,H=620;
+let corners=[],edits=[],zoom=1;
+
+function polygon(c,pts){
+ c.beginPath();
+ c.moveTo(pts[0].x,pts[0].y);
+ for(let i=1;i<pts.length;i++){
+  c.lineTo(pts[i].x,pts[i].y);
+ }
+ c.closePath();
+}
+
+function area(c,pts,color){
+ polygon(c,pts);
+ c.fillStyle=color;
+ c.fill();
+}
+
+function sampleRoom(){
+ b.fillStyle="#e8ddd0";
+ b.fillRect(0,0,W,H);
+
+ // Wall
+ area(b,[
+  {x:0,y:0},{x:700,y:0},
+  {x:700,y:420},{x:0,y:470}
+ ],"#c8b39d");
+
+ // Side wall
+ area(b,[
+  {x:700,y:0},{x:900,y:0},
+  {x:900,y:470},{x:700,y:420}
+ ],"#9f8b78");
+
+ // Wood floor
+ area(b,[
+  {x:0,y:470},{x:700,y:420},
+  {x:900,y:470},{x:900,y:620},
+  {x:0,y:620}
+ ],"#aa8060");
+
+ // Floorboard texture
+ b.strokeStyle="rgba(60,34,18,.35)";
+ b.lineWidth=3;
+ for(let x=-150;x<1050;x+=85){
+  b.beginPath();
+  b.moveTo(x,620);
+  b.lineTo(x+170,440);
+  b.stroke();
+ }
+ for(let y=510;y<620;y+=35){
+  b.beginPath();
+  b.moveTo(0,y);
+  b.lineTo(900,y-12);
+  b.stroke();
+ }
+
+ // Door
+ b.fillStyle="#f0e3ce";
+ b.fillRect(60,120,200,350);
+ b.fillStyle="#9d7351";
+ b.fillRect(75,135,170,335);
+ b.strokeStyle="#684c38";
+ b.lineWidth=5;
+ b.strokeRect(95,160,130,135);
+ b.strokeRect(95,315,130,125);
+ b.fillStyle="#f5ce79";
+ b.beginPath();
+ b.arc(215,320,7,0,Math.PI*2);
+ b.fill();
+
+ // Window
+ b.fillStyle="#f5e8d7";
+ b.fillRect(455,105,200,235);
+ b.fillStyle="#90c2df";
+ b.fillRect(468,117,174,210);
+ b.fillStyle="#e9f3fa";
+ b.fillRect(551,117,9,210);
+ b.fillRect(468,215,174,9);
+
+ // Painting on wall
+ b.fillStyle="#5a4c40";
+ b.fillRect(298,105,120,125);
+ b.fillStyle="#f1e9d9";
+ b.fillRect(308,115,100,105);
+ b.fillStyle="#709376";
+ b.beginPath();
+ b.arc(358,167,32,0,Math.PI*2);
+ b.fill();
+
+ // Rug
+ area(b,[
+  {x:320,y:515},{x:740,y:498},
+  {x:875,y:605},{x:280,y:615}
+ ],"#d5c7b5");
+ b.strokeStyle="rgba(95,72,53,.25)";
+ for(let x=350;x<800;x+=55){
+  b.beginPath();
+  b.moveTo(x,520);
+  b.lineTo(x-25,600);
+  b.stroke();
+ }
+
+ // Sofa
+ b.fillStyle="#59616d";
+ b.fillRect(340,385,430,125);
+ b.fillStyle="#8993a0";
+ b.fillRect(360,397,390,75);
+ b.fillStyle="#a6afba";
+ b.fillRect(370,440,178,65);
+ b.fillRect(560,440,180,65);
+ b.fillStyle="#49515e";
+ b.fillRect(326,408,38,120);
+ b.fillRect(748,408,38,120);
+
+ // Table
+ b.fillStyle="#65482f";
+ b.fillRect(495,525,230,25);
+ b.fillRect(520,550,18,55);
+ b.fillRect(690,550,18,55);
+
+ // Plant
+ b.fillStyle="#b18c65";
+ b.fillRect(814,429,55,66);
+ b.strokeStyle="#4d7743";
+ b.lineWidth=7;
+ for(let i=0;i<7;i++){
+  b.beginPath();
+  b.moveTo(842,430);
+  b.quadraticCurveTo(
+   800+i*9,345,793+i*13,320+i*5
+  );
+  b.stroke();
+ }
+}
+
+function render(markers=true){
+ ctx.clearRect(0,0,W,H);
+ ctx.drawImage(base,0,0);
+
+ // Color preserves shading and floor texture.
+ edits.filter(e=>e.type==="paint").forEach(e=>{
+  ctx.save();
+  polygon(ctx,e.points);
+  ctx.clip();
+  ctx.globalCompositeOperation="color";
+  ctx.globalAlpha=.94;
+  ctx.fillStyle=e.color;
+  ctx.fillRect(0,0,W,H);
+  ctx.restore();
+ });
+
+ // Protected objects keep their original appearance.
+ edits.filter(e=>e.type==="protect").forEach(e=>{
+  ctx.save();
+  polygon(ctx,e.points);
+  ctx.clip();
+  ctx.drawImage(base,0,0);
+  ctx.restore();
+ });
+
+ if(markers){
+  if(corners.length>1){
+   ctx.beginPath();
+   ctx.moveTo(corners[0].x,corners[0].y);
+   for(let i=1;i<corners.length;i++){
+    ctx.lineTo(corners[i].x,corners[i].y);
+   }
+   if(corners.length===4)ctx.closePath();
+   ctx.strokeStyle="#ffde70";
+   ctx.lineWidth=4;
+   ctx.stroke();
+  }
+  corners.forEach((p,i)=>{
+   ctx.beginPath();
+   ctx.arc(p.x,p.y,10,0,Math.PI*2);
+   ctx.fillStyle="#ffde70";
+   ctx.fill();
+   ctx.fillStyle="#10243f";
+   ctx.font="bold 15px Arial";
+   ctx.fillText(String(i+1),p.x+12,p.y-10);
+  });
+ }
+
+ const fit=Math.min($("viewport").clientWidth,W);
+ canvas.style.width=Math.round(fit*zoom)+"px";
+ canvas.style.height="auto";
+ $("counter").textContent=
+  "Corners selected: "+corners.length+" / 4";
+}
+
+canvas.addEventListener("pointerup",e=>{
+ if(corners.length===4)return;
+ const r=canvas.getBoundingClientRect();
+ corners.push({
+  x:(e.clientX-r.left)*W/r.width,
+  y:(e.clientY-r.top)*H/r.height
+ });
+ render();
+ $("message").textContent=corners.length===4
+  ?"Four corners ready! Press Apply Four Corners."
+  :"Tap the next corner.";
+});
+
+$("apply").onclick=()=>{
+ if(corners.length!==4){
+  $("message").textContent="Please tap four corners first.";
+  return;
+ }
+ edits.push({
+  type:$("tool").value,
+  color:$("color").value,
+  points:corners.map(p=>({...p}))
+ });
+ corners=[];
+ render();
+ $("message").textContent="Done! Area updated.";
+};
+
+$("tool").onchange=()=>{
+ corners=[];
+ render();
+ $("message").textContent=$("tool").value==="protect"
+  ?"Tap four corners around the object to protect."
+  :"Tap four corners of the area to paint.";
+};
+
+$("clear").onclick=()=>{
+ corners=[];
+ render();
+};
+
+$("undo").onclick=()=>{
+ edits.pop();
+ corners=[];
+ render();
+};
+
+$("reset").onclick=()=>{
+ edits=[];
+ corners=[];
+ zoom=1;
+ render();
+};
+
+$("zoomin").onclick=()=>{
+ zoom=Math.min(3,zoom+.25);
+ render();
+};
+
+$("zoomout").onclick=()=>{
+ zoom=Math.max(.5,zoom-.25);
+ render();
+};
+
+function finishedImage(){
+ const output=document.createElement("canvas");
+ output.width=W;
+ output.height=H;
+ render(false);
+ output.getContext("2d").drawImage(canvas,0,0);
+ render(true);
+ return output;
+}
+
+$("download").onclick=()=>{
+ const link=document.createElement("a");
+ link.href=finishedImage().toDataURL("image/png");
+ link.download="m-homes-room.png";
+ link.click();
+};
+
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const request=indexedDB.open("mhomes-gallery-demo",1);
+  request.onupgradeneeded=()=>{
+   request.result.createObjectStore("rooms",{keyPath:"id"});
+  };
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+}
+
+$("save").onclick=async()=>{
+ try{
+  const img=finishedImage().toDataURL("image/jpeg",.85);
+  const db=await openDB();
+  await new Promise((resolve,reject)=>{
+   const tx=db.transaction("rooms","readwrite");
+   tx.objectStore("rooms").put({
+    id:Date.now(),
+    image:img
+   });
+   tx.oncomplete=resolve;
+   tx.onerror=reject;
+  });
+  db.close();
+  $("message").textContent="Saved to My Gallery!";
+  showGallery();
+ }catch(e){
+  $("message").textContent="Could not save. Try Download Picture.";
+ }
+};
+
+async function showGallery(){
+ try{
+  const db=await openDB();
+  const records=await new Promise((resolve,reject)=>{
+   const tx=db.transaction("rooms","readonly");
+   const request=tx.objectStore("rooms").getAll();
+   request.onsuccess=()=>resolve(request.result);
+   request.onerror=()=>reject(request.error);
+  });
+  db.close();
+
+  const box=$("gallery");
+  box.replaceChildren();
+  if(!records.length){
+   box.textContent="No pictures saved yet.";
+   return;
+  }
+
+  records.reverse().forEach(record=>{
+   const card=document.createElement("div");
+   card.className="galleryCard";
+   const img=document.createElement("img");
+   img.src=record.image;
+   const del=document.createElement("button");
+   del.textContent="Delete Picture";
+   del.onclick=async()=>{
+    const db=await openDB();
+    const tx=db.transaction("rooms","readwrite");
+    tx.objectStore("rooms").delete(record.id);
+    tx.oncomplete=()=>{
+     db.close();
+     showGallery();
+    };
+   };
+   card.append(img,del);
+   box.append(card);
+  });
+ }catch(e){
+  $("gallery").textContent="Gallery unavailable.";
+ }
+}
+
+sampleRoom();
+render();
+showGallery();
+window.addEventListener("resize",()=>render());
+</script>
+</body>
+</html>
