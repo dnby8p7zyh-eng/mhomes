@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>M HOMES</title>
+<style>
+:root{--navy:#10243f;--gold:#d9b36b}
+*{box-sizing:border-box}body{background:var(--navy);color:#fff;font:16px Arial,sans-serif;margin:0}
+header{text-align:center;border-bottom:2px solid var(--gold);padding:18px 12px}h1,h2{color:var(--gold);margin:8px 0}h1{letter-spacing:2px}main{max-width:880px;margin:auto;padding:16px}p{line-height:1.5}
+button,.btn{font:600 16px Arial;border:0;border-radius:10px;padding:13px;background:var(--gold);color:var(--navy);cursor:pointer;min-height:46px}
+button.secondary{background:#283f5c;color:#fff;border:1px solid #9aa7b9}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}.wide{grid-column:1/-1}
+label{display:block;margin:10px 0 5px}select,input[type=color]{width:100%;min-height:48px;border-radius:8px;border:1px solid #a8b4c5;padding:4px;font-size:16px}
+#view{background:#09182b;overflow:auto;border-radius:12px;border:1px solid #687991;max-height:64vh;touch-action:pan-x pan-y}
+#room{display:block;touch-action:manipulation;max-width:none;cursor:crosshair}
+.panel{background:#203756;border-radius:13px;padding:16px;margin:14px 0}.hint{color:#d6e0ee;font-size:14px}.status{color:#ffda84;min-height:22px}a{color:var(--gold)}.gallery-img{width:100%;border-radius:9px;display:block;max-height:260px;object-fit:contain;background:#071527}.gallery-item{border:1px solid #6a7890;padding:12px;border-radius:12px;margin:10px 0}
+
+/* Added site navigation — original Color Studio styles remain unchanged. */
+.site-page{display:none}.site-page.active{display:block}
+.site-button{width:100%;display:block;margin:12px 0}
+.site-small{font-size:13px;color:#d6e0ee}
+.site-card{background:#203756;border-radius:13px;padding:16px;margin:13px 0}
+.site-back{margin:10px 0 20px}
+.site-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.site-nav button{font-size:14px;min-height:40px}
+.site-field{width:100%;min-height:46px;padding:10px;border-radius:8px;border:1px solid #b6c3d3;font:16px Arial;background:#fff;color:#10243f}
+.site-iframe{display:block;width:100%;height:78dvh;min-height:420px;border:0;border-radius:12px;background:#fff}
+.site-tel{display:block;text-align:center;text-decoration:none;background:#d9b36b;color:#10243f;border-radius:10px;padding:15px;font-weight:bold;margin:14px 0}
+.site-section-title{color:#d9b36b}
+@media(max-width:600px){main{padding:10px}.site-card{padding:14px}.site-nav button{flex:1}}
+</style>
+</head>
+<body>
+<header>
+<h1 id="owner-title" style="user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:pointer">M HOMES</h1>
+<p>Explore Homes. Create Your Colors.</p><p class="site-small">CARTOON VERSION — NOV 27</p>
+<div class="site-nav">
+<button onclick="siteShow('home')">Home</button>
+<button onclick="siteShow('explore')">Explore Houses</button>
+<button onclick="siteShow('favorites')">Favorites</button>
+<button onclick="siteShow('studio')">Create Color</button>
+<button onclick="siteShow('contact')">Contact Us</button>
+</div>
+</header>
+<main>
+<section class="site-page active" id="page-home">
+<div class="site-card">
+<h2>Welcome to M HOMES</h2>
+<p>Explore beautiful houses and experiment with colors in your own room studio. Create Color opens the sample living room.</p>
+<button class="site-button" onclick="siteShow('explore')">Explore Houses</button>
+<button class="site-button" onclick="siteShow('favorites')">Favorites</button>
+<button class="site-button" onclick="siteShow('contact')">Contact Us</button>
+</div>
+</section>
+<section class="site-page" id="page-explore"><h2>Explore Houses</h2><div id="site-houses"></div><button class="secondary site-back" onclick="siteShow('home')">Back Home</button></section>
+<section class="site-page" id="page-house"><h2 id="site-house-name"></h2><p id="site-house-address"></p><button class="site-button" onclick="siteOpenTour()">View Original 360° Tour</button><button class="site-button" onclick="siteShow('studio')">Create Color</button><button class="site-button" id="site-favorite-button" onclick="siteToggleFavorite()">Add to Favorites</button><button class="secondary site-back" onclick="siteShow('explore')">Back to Houses</button></section>
+<section class="site-page" id="page-tour"><h2>Original iGUIDE Tour</h2><iframe class="site-iframe" id="site-tour-frame" title="Original iGUIDE Tour" allowfullscreen allow="fullscreen"></iframe><p class="site-small">This is the original tour. Painting is currently available in the sample room, not inside the live tour.</p><a class="site-tel" id="site-tour-link" target="_blank" rel="noopener noreferrer">Open Full Screen Tour</a><button class="secondary site-back" onclick="siteShow('house')">Back to House</button></section>
+<section class="site-page" id="page-favorites"><h2>Your Favorites</h2><div id="site-favorite-list"></div><button class="secondary site-back" onclick="siteShow('home')">Back Home</button></section>
+<section class="site-page" id="page-contact"><div class="site-card"><h2>Contact Us</h2><p>Have a question about a house? Contact M HOMES.</p><a class="site-tel" href="tel:+19024411964">Call +1 (902) 441-1964</a><p class="site-small">Tap to open your phone's calling option.</p></div><button class="secondary site-back" onclick="siteShow('home')">Back Home</button></section>
+<section class="site-page" id="page-owner"><div class="site-card"><h2>Owner Access — Local Demo Only</h2><p class="site-small">This test PIN is not secure. Added houses are visible only in this browser, not to your public visitors. Do not use this as real public owner authentication.</p><label for="site-new-name">House Name</label><input class="site-field" id="site-new-name" placeholder="House name"><label for="site-new-address">Location</label><input class="site-field" id="site-new-address" placeholder="City, address"><label for="site-new-tour">iGUIDE Tour Link</label><input class="site-field" id="site-new-tour" placeholder="https://youriguide.com/..."><button class="site-button" onclick="siteAddHouse()">Add House (On This Device)</button><div id="site-owner-list"></div></div><button class="secondary site-back" onclick="siteShow('home')">Back Home</button></section>
+<section class="site-page" id="page-studio"><div class="panel">
+<h2>Sample Living Room</h2>
+<p class="hint">This sample room loads automatically. No screenshot, upload, or iGUIDE needed. This lets us test the painting tools on your phone.</p>
+<div id="view"><canvas id="room" width="1000" height="680" aria-label="Sample furnished living room for coloring"></canvas></div>
+<p class="status" id="status">Ready! Choose Paint Area and tap four wall corners.</p>
+<p id="corners" class="hint">Corners selected: 0 / 4</p>
+<label for="tool">Tool</label>
+<select id="tool"><option value="paint">Paint Area</option><option value="protect">Protect Object</option></select>
+<label for="color">Choose paint color</label>
+<input id="color" type="color" value="#f18b38">
+<div class="controls">
+<button type="button" id="apply" class="wide">Apply Four Corners</button>
+<button type="button" id="zoomout" class="secondary">Zoom −</button><button type="button" id="zoomin" class="secondary">Zoom +</button>
+<button type="button" id="clear" class="secondary">Clear Corners</button><button type="button" id="undo" class="secondary">Undo Last Change</button>
+<button type="button" id="save" class="wide">Save to My Gallery</button>
+<button type="button" id="download" class="wide secondary">Download Picture</button>
+<button type="button" id="reset" class="wide secondary">Reset Sample Room</button>
+</div>
+<p class="hint">Tip: If a door or furniture is inside your painting area, first select Protect Object and tap its four corners, then switch back to Paint Area. The example has floorboard lines so you can see that textures remain visible.</p>
+</div>
+<div class="panel"><h2>My Color Gallery</h2><div id="gallery">No saved pictures yet.</div></div>
+<p class="hint">Saved photos stay in this browser on this device.</p><button class="secondary site-back" onclick="siteShow('home')">Back Home</button></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const SITE_STARTER=[{id:'swivel38',name:'38 Swivel Court',address:'Herring Cove, Nova Scotia, Canada',tour:'https://youriguide.com/38_swivel_ct_herring_cove_ns/'}];
+function siteRead(key,fallback){try{let x=JSON.parse(localStorage.getItem(key));return Array.isArray(x)?x:fallback}catch(e){return fallback}}
+let siteHouses=siteRead('hh_web_houses',SITE_STARTER).map(h=>({...h,address:h.address||h.location||''}));
+let siteFavorites=siteRead('hh_web_favorites',[]);
+let siteSelected='swivel38';
+function siteStore(){try{localStorage.setItem('hh_web_houses',JSON.stringify(siteHouses));localStorage.setItem('hh_web_favorites',JSON.stringify(siteFavorites))}catch(e){alert('Browser storage is unavailable.')}}
+function siteShow(which){
+ document.querySelectorAll('.site-page').forEach(s=>s.classList.remove('active'));
+ const section=document.getElementById('page-'+which);if(!section)return;
+ section.classList.add('active');
+ if(which==='explore')siteRenderHouses();
+ if(which==='favorites')siteRenderFavorites();
+ if(which==='owner')siteRenderOwner();
+ if(which==='house')siteFillHouse();
+ if(which==='studio')window.dispatchEvent(new Event('resize'));
+ window.scrollTo(0,0);
+}
+function siteButton(label,fn,style=''){const b=document.createElement('button');b.textContent=label;b.onclick=fn;b.className='site-button '+style;return b}
+function siteCard(h){const d=document.createElement('div');d.className='site-card';const t=document.createElement('h3');t.textContent=h.name;const p=document.createElement('p');p.textContent=h.address;d.append(t,p);return d}
+function siteRenderHouses(){const d=$('site-houses');d.replaceChildren();if(!siteHouses.length){d.textContent='No houses yet.';return}siteHouses.forEach(h=>{const c=siteCard(h);c.append(siteButton('View House',()=>{siteSelected=h.id;siteShow('house')}));d.append(c)})}
+function siteFillHouse(){const h=siteHouses.find(x=>x.id===siteSelected);if(!h){siteShow('explore');return}$('site-house-name').textContent=h.name;$('site-house-address').textContent=h.address;$('site-favorite-button').textContent=siteFavorites.includes(h.id)?'Remove from Favorites':'Add to Favorites'}
+function siteOpenTour(){const h=siteHouses.find(x=>x.id===siteSelected);if(!h)return;$('site-tour-frame').src=h.tour;$('site-tour-link').href=h.tour;siteShow('tour')}
+function siteToggleFavorite(){siteFavorites=siteFavorites.includes(siteSelected)?siteFavorites.filter(x=>x!==siteSelected):[...siteFavorites,siteSelected];siteStore();siteFillHouse()}
+function siteRenderFavorites(){const d=$('site-favorite-list');d.replaceChildren();const list=siteHouses.filter(h=>siteFavorites.includes(h.id));if(!list.length){d.textContent='No favorites yet.';return}list.forEach(h=>{const c=siteCard(h);c.append(siteButton('View House',()=>{siteSelected=h.id;siteShow('house')}));d.append(c)})}
+function siteAddHouse(){const name=$('site-new-name').value.trim(),address=$('site-new-address').value.trim(),tour=$('site-new-tour').value.trim();if(!name||!address||!tour){alert('Enter the name, location, and iGUIDE link.');return}try{const u=new URL(tour);if(u.protocol!=='https:')throw Error('invalid')}catch(e){alert('Enter a valid https:// tour link.');return}siteHouses.push({id:'house-'+Date.now(),name,address,tour});siteStore();$('site-new-name').value='';$('site-new-address').value='';$('site-new-tour').value='';siteRenderOwner();alert('House added on this device only.')}
+function siteRenderOwner(){const d=$('site-owner-list');d.replaceChildren();siteHouses.forEach(h=>{const c=siteCard(h);c.append(siteButton('Delete House',()=>{if(!confirm('Delete '+h.name+' on this device?'))return;siteHouses=siteHouses.filter(x=>x.id!==h.id);siteFavorites=siteFavorites.filter(x=>x!==h.id);siteStore();siteRenderOwner()},'secondary'));d.append(c)})}
+// Test-only owner access: press-and-hold heading for 1.5 seconds.
+let siteHold=null;let siteHoldFired=false;const siteOwnerTitle=$('owner-title');
+siteOwnerTitle.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;siteHoldFired=false;clearTimeout(siteHold);siteHold=setTimeout(()=>{siteHoldFired=true;const pin=prompt('Owner PIN (local test only)');if(pin==='1616')siteShow('owner');else if(pin!==null)alert('Incorrect PIN')},1500)});
+for(const type of ['pointerup','pointercancel','pointerleave'])siteOwnerTitle.addEventListener(type,()=>clearTimeout(siteHold));
+siteOwnerTitle.addEventListener('contextmenu',e=>e.preventDefault());
+siteShow('home');
+</script>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('room'),ctx=canvas.getContext('2d');
+const base=document.createElement('canvas');base.width=canvas.width;base.height=canvas.height;
+const b=base.getContext('2d');
+const $=id=>document.getElementById(id);
+let changes=[],points=[],zoom=1;
+const W=canvas.width,H=canvas.height;
+function poly(c,pts){c.beginPath();c.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>c.lineTo(p.x,p.y));c.closePath()}
+function fillPoly(c,pts,color){poly(c,pts);c.fillStyle=color;c.fill()}
+function line(c,pts,color,width=2){c.beginPath();c.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>c.lineTo(p[0],p[1]));c.strokeStyle=color;c.lineWidth=width;c.stroke()}
+function drawSample(){
+  b.fillStyle='#e9e1d8';b.fillRect(0,0,W,H);
+  fillPoly(b,[{x:0,y:0},{x:770,y:0},{x:770,y:455},{x:0,y:505}],'#c9b7a1');
+  fillPoly(b,[{x:770,y:0},{x:1000,y:0},{x:1000,y:510},{x:770,y:455}],'#a99887');
+  fillPoly(b,[{x:0,y:505},{x:770,y:455},{x:1000,y:510},{x:1000,y:680},{x:0,y:680}],'#ad8463');
+  // Wall texture and molding
+  b.strokeStyle='rgba(255,255,255,.17)';b.lineWidth=3;
+  for(let y=34;y<440;y+=48){b.beginPath();b.moveTo(0,y);b.lineTo(770,y);b.stroke()}
+  line(b,[[0,500],[770,452],[1000,505]],'#faf0de',12);
+  // Visible wood-plank texture
+  for(let i=0;i<15;i++)line(b,[[i*84-120,680],[i*76+100,477]],'rgba(54,34,20,.38)',3);
+  for(let y=535;y<675;y+=48)line(b,[[0,y],[1000,y-12]],'rgba(64,37,18,.25)',2);
+  // Door & frame
+  b.fillStyle='#f0e6da';b.fillRect(70,126,205,380);
+  b.fillStyle='#6f5946';b.fillRect(85,143,175,363);
+  b.fillStyle='#b69572';b.fillRect(97,154,150,350);
+  b.strokeStyle='#725943';b.lineWidth=5;b.strokeRect(115,181,112,140);b.strokeRect(115,341,112,135);
+  b.fillStyle='#e8d1a2';b.beginPath();b.arc(218,338,7,0,Math.PI*2);b.fill();
+  // Window with sunlight
+  b.fillStyle='#f2e6d7';b.fillRect(480,111,220,242);
+  b.fillStyle='#85b8d6';b.fillRect(494,124,192,215);
+  b.fillStyle='#a8d0de';b.fillRect(504,140,175,186);
+  b.fillStyle='#e8edf0';b.fillRect(580,124,11,215);b.fillRect(494,231,192,10);
+  b.strokeStyle='#b9a18c';b.lineWidth=6;b.strokeRect(480,111,220,242);
+  // Artwork
+  b.fillStyle='#5d5046';b.fillRect(305,115,126,135);b.fillStyle='#f5ebdc';b.fillRect(316,125,104,112);
+  b.fillStyle='#708d72';b.beginPath();b.arc(366,174,33,0,Math.PI*2);b.fill();
+  // Rug
+  fillPoly(b,[{x:400,y:548},{x:820,y:530},{x:960,y:665},{x:300,y:668}],'#d2c6b6');
+  for(let i=0;i<8;i++)line(b,[[420+i*53,560],[390+i*75,650]],'rgba(100,80,69,.19)',7);
+  // Couch & cushions
+  b.fillStyle='#535966';b.fillRect(385,400,460,130);
+  b.fillStyle='#77808b';b.fillRect(401,413,425,86);
+  b.fillStyle='#9399a1';b.fillRect(412,446,196,71);b.fillRect(620,446,196,71);
+  b.fillStyle='#545968';b.fillRect(374,419,38,116);b.fillRect(819,419,38,116);
+  b.fillStyle='#434651';b.fillRect(398,524,33,37);b.fillRect(789,524,33,37);
+  // Coffee table
+  b.fillStyle='#6d4d32';b.fillRect(533,556,240,27);b.fillRect(552,580,18,65);b.fillRect(744,580,18,65);
+  // Plant
+  b.fillStyle='#b68e67';b.fillRect(886,459,63,66);
+  for(let k=0;k<9;k++){b.strokeStyle='#506e43';b.lineWidth=8;b.beginPath();b.moveTo(920,470);b.quadraticCurveTo(893+(k%3)*23,370,870+k*12,340+(k%4)*20);b.stroke()}
+  b.fillStyle='rgba(255,255,255,.09)';b.fillRect(0,0,W,455);
+}
+function render(markers=true){
+  ctx.clearRect(0,0,W,H);ctx.drawImage(base,0,0);
+  for(const c of changes.filter(c=>c.type==='paint')){
+    ctx.save();poly(ctx,c.points);ctx.clip();ctx.globalCompositeOperation='color';ctx.globalAlpha=.93;ctx.fillStyle=c.color;ctx.fillRect(0,0,W,H);ctx.restore();
+  }
+  for(const c of changes.filter(c=>c.type==='protect')){
+    ctx.save();poly(ctx,c.points);ctx.clip();ctx.drawImage(base,0,0);ctx.restore();
+  }
+  if(markers){
+    if(points.length>1){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);points.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle='#ffdf69';ctx.lineWidth=4;ctx.stroke()}
+    points.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.fillStyle='#ffdc6a';ctx.fill();ctx.strokeStyle='#0e2238';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#142a40';ctx.font='bold 13px Arial';ctx.fillText(String(i+1),p.x+12,p.y-10)})
+  }
+  const fit=Math.min($('view').clientWidth,W);canvas.style.width=Math.round(fit*zoom)+'px';canvas.style.height='auto';
+  $('corners').textContent='Corners selected: '+points.length+' / 4';
+}
+canvas.addEventListener('pointerup',e=>{
+  if(points.length===4){$('status').textContent='Four corners selected. Press Apply Four Corners.';return}
+  const r=canvas.getBoundingClientRect();points.push({x:Math.max(0,Math.min(W,(e.clientX-r.left)*W/r.width)),y:Math.max(0,Math.min(H,(e.clientY-r.top)*H/r.height))});
+  $('status').textContent=points.length===4?'Four corners ready — press Apply Four Corners.':'Tap the next corner.';render();
+});
+$('tool').onchange=()=>{points=[];$('status').textContent=$('tool').value==='protect'?'Tap four corners around the object to keep unchanged.':'Tap four corners of the wall or floor.';render()};
+$('apply').onclick=()=>{
+  if(points.length!==4){$('status').textContent='Tap all four corners first ('+points.length+' of 4).';return}
+  changes.push({type:$('tool').value,color:$('color').value,points:points.map(p=>({...p}))});points=[];render();
+  $('status').textContent=$('tool').value==='protect'?'Object protected. Now choose Paint Area.':'Color applied! You can choose another area or save.';
+};
+$('clear').onclick=()=>{points=[];render();$('status').textContent='Selected corners cleared.'};
+$('undo').onclick=()=>{if(changes.length)changes.pop();points=[];render();$('status').textContent='Last change undone.'};
+$('reset').onclick=()=>{changes=[];points=[];zoom=1;render();$('status').textContent='Sample room reset.'};
+$('zoomin').onclick=()=>{zoom=Math.min(3,zoom+.25);render()};
+$('zoomout').onclick=()=>{zoom=Math.max(.5,zoom-.25);render()};
+function finalImage(){const t=document.createElement('canvas');t.width=W;t.height=H;render(false);t.getContext('2d').drawImage(canvas,0,0);render(true);return t}
+$('download').onclick=()=>{const a=document.createElement('a');a.href=finalImage().toDataURL('image/png');a.download='m-homes-colored-room.png';a.click();$('status').textContent='Download started.'};
+function dbOpen(){return new Promise((resolve,reject)=>{if(!indexedDB){reject(Error('Not supported'));return}const r=indexedDB.open('mhomes-studio-demo',1);r.onupgradeneeded=()=>r.result.createObjectStore('photos',{keyPath:'id'});r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+function dbRun(mode,fn){return dbOpen().then(db=>new Promise((resolve,reject)=>{const t=db.transaction('photos',mode);const store=t.objectStore('photos');let result;try{result=fn(store)}catch(e){db.close();reject(e);return}if(result&&result.onsuccess!==undefined)result.onsuccess=()=>{result.data=result.result};t.oncomplete=()=>{const data=result&&result.data;db.close();resolve(data)};t.onerror=()=>{db.close();reject(t.error)}}))}
+$('save').onclick=async()=>{
+ try{const data=finalImage().toDataURL('image/jpeg',.83);await dbRun('readwrite',s=>s.put({id:Date.now()+Math.random(),data,date:new Date().toLocaleString()}));$('status').textContent='Saved to My Gallery on this device!';await gallery()}catch(e){$('status').textContent='Could not save gallery photo. Use Download Picture instead.'}
+};
+async function gallery(){const box=$('gallery');try{const all=await dbRun('readonly',s=>s.getAll());box.replaceChildren();if(!all||!all.length){box.textContent='No saved pictures yet.';return}for(const item of all.reverse()){
+ const card=document.createElement('div');card.className='gallery-item';const pic=document.createElement('img');pic.className='gallery-img';pic.src=item.data;pic.alt='Saved room color design';const p=document.createElement('p');p.textContent=item.date;const d=document.createElement('button');d.textContent='Delete This Picture';d.className='secondary';d.onclick=async()=>{await dbRun('readwrite',s=>s.delete(item.id));gallery()};card.append(pic,p,d);box.append(card)
+ }}catch(e){box.textContent='Gallery storage is unavailable in this browser. You can still download your picture.'}}
+drawSample();render();gallery();window.addEventListener('resize',()=>render());
+
+})();
+</script>
+</body>
+</html>
